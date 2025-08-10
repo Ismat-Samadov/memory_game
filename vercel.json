@@ -1,12 +1,7 @@
 {
-  "functions": {
-    "pages/api/generate.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/static/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -15,7 +10,7 @@
       ]
     },
     {
-      "source": "/",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
