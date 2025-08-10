@@ -18,7 +18,7 @@ export default function Document() {
               "@type": "WebApplication",
               "name": "Secure Password Generator",
               "description": "Generate secure, random passwords, passphrases, and PINs with advanced customization options. Free online password generator with strength analysis.",
-              "url": "https://pwd-gen-vert.vercel.app/",
+              "url": "https://pwd-gen-iota.vercel.app/",
               "applicationCategory": "SecurityApplication",
               "operatingSystem": "Any",
               "offers": {
