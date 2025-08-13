@@ -12,6 +12,27 @@ html, body {
 }
 
 /* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 0.75rem !important;
+    align-items: flex-start !important;
+    padding-top: 2rem !important;
+  }
+  
+  .generator-card {
+    padding: 1.25rem !important;
+  }
+  
+  .header-title {
+    font-size: 1.75rem !important;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
 @media (max-width: 480px) {
   .password-input-group {
     flex-direction: column !important;
@@ -19,19 +40,23 @@ html, body {
   
   .password-input {
     min-width: 100% !important;
+    font-size: 0.8rem !important;
   }
   
   .copy-button {
     width: 100% !important;
     min-width: 100% !important;
+    margin-top: 0.5rem !important;
   }
   
   .main-container {
-    padding: 0.75rem !important;
+    padding: 0.5rem !important;
+    padding-top: 1rem !important;
   }
   
   .generator-card {
     padding: 1rem !important;
+    border-radius: 8px !important;
   }
   
   .header-title {
@@ -39,8 +64,20 @@ html, body {
   }
   
   .features-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Landscape mobile phones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .main-container {
+    align-items: flex-start !important;
+    padding-top: 1rem !important;
+  }
+  
+  .generator-card {
+    margin-bottom: 1rem !important;
   }
 }
 
@@ -101,6 +138,47 @@ input[type="range"]::-moz-range-thumb {
 
 .generator-card {
   will-change: transform;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effects for desktop */
+@media (hover: hover) {
+  .copy-button:hover:not(:disabled) {
+    background: #1d4ed8 !important;
+    transform: translateY(-1px);
+  }
+  
+  .generator-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+  }
+}
+
+/* Better button styling */
+button {
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* Improved focus states */
+.password-input:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Loading state animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.generating {
+  animation: pulse 1s infinite;
 }
 
 /* Reduce motion for accessibility */
