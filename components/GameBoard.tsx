@@ -10,6 +10,7 @@ import Settings from './Settings';
 import Confetti from './Confetti';
 import Leaderboard from './Leaderboard';
 import Statistics from './Statistics';
+import AnimatedBackground from './AnimatedBackground';
 
 export default function GameBoard() {
   const [cards, setCards] = useState<CardType[]>([]);
@@ -346,8 +347,10 @@ export default function GameBoard() {
   };
 
   return (
-    <div className="max-w-[800px] mx-auto p-5 sm:p-[15px]">
-      {showConfetti && <Confetti />}
+    <>
+      <AnimatedBackground />
+      <div className="max-w-[900px] mx-auto p-6 sm:p-4 relative z-10">
+        {showConfetti && <Confetti />}
 
       <div className="text-center mb-[30px]">
         <div className="flex items-center justify-center gap-[15px] mb-5 relative">
@@ -560,46 +563,47 @@ export default function GameBoard() {
         stats={getStatisticsData()}
       />
 
-      <style jsx>{`
-        @keyframes titleFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
-        @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-          50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-        }
-        @keyframes statShimmer {
-          0% { left: -100%; }
-          100% { left: 100%; }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideInBounce {
-          0% { transform: translateY(-100px) scale(0.8); opacity: 0; }
-          60% { transform: translateY(10px) scale(1.05); opacity: 1; }
-          80% { transform: translateY(-5px) scale(0.98); }
-          100% { transform: translateY(0) scale(1); opacity: 1; }
-        }
-        @keyframes rotateGlow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes titlePulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-        }
-        @media (max-width: 380px) {
-          .xs\\:gap-2 { gap: 8px; }
-          .xs\\:p-2 { padding: 8px; }
-        }
-      `}</style>
-    </div>
+        <style jsx>{`
+          @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+          }
+          @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+          }
+          @keyframes statShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes slideInBounce {
+            0% { transform: translateY(-100px) scale(0.8); opacity: 0; }
+            60% { transform: translateY(10px) scale(1.05); opacity: 1; }
+            80% { transform: translateY(-5px) scale(0.98); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+          }
+          @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+          }
+          @media (max-width: 380px) {
+            .xs\\:gap-2 { gap: 8px; }
+            .xs\\:p-2 { padding: 8px; }
+          }
+        `}</style>
+      </div>
+    </>
   );
 }

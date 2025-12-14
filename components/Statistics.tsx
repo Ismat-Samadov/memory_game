@@ -32,20 +32,29 @@ export default function Statistics({ isOpen, onClose, stats }: StatisticsProps) 
 
   return (
     <div
-      className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-[2000] animate-[fadeIn_0.3s_ease-in-out]"
+      className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-[2000] animate-[fadeIn_0.3s_ease-in-out]"
       onClick={onClose}
     >
       <div
-        className="relative w-[90%] max-w-[800px] max-h-[90vh] overflow-y-auto p-10 rounded-3xl border-2 border-white/20 animate-[slideUp_0.4s_cubic-bezier(0.34,1.56,0.64,1)] sm:p-[30px_20px]"
+        className="relative w-[90%] max-w-[850px] max-h-[90vh] overflow-y-auto p-12 rounded-[32px] border-2 border-white/30 animate-[slideUp_0.4s_cubic-bezier(0.34,1.56,0.64,1)] sm:p-8"
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.3)'
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%)',
+          backdropFilter: 'blur(30px)',
+          WebkitBackdropFilter: 'blur(30px)',
+          boxShadow: '0 25px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 2 6px rgba(255, 255, 255, 0.4)'
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 rounded-[32px] opacity-30 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at top left, rgba(138, 116, 249, 0.3), transparent 50%), radial-gradient(circle at bottom right, rgba(79, 172, 254, 0.3), transparent 50%)',
+            animation: 'pulse 4s ease-in-out infinite'
+          }}
+        />
+
         <button
-          className="absolute top-[15px] right-[15px] w-10 h-10 flex items-center justify-center bg-white/20 border-2 border-white/30 text-white text-3xl rounded-full cursor-pointer transition-all duration-300 hover:bg-white/30 hover:rotate-90 leading-none"
+          className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center bg-white/15 border-2 border-white/30 text-white text-3xl rounded-full cursor-pointer transition-all duration-300 hover:bg-white/30 hover:border-white/50 hover:rotate-180 hover:scale-110 leading-none backdrop-blur-sm"
           onClick={onClose}
         >
           ×
