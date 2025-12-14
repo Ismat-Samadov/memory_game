@@ -10,7 +10,6 @@ import Settings from './Settings';
 import Confetti from './Confetti';
 import Leaderboard from './Leaderboard';
 import Statistics from './Statistics';
-import styles from './GameBoard.module.css';
 
 export default function GameBoard() {
   const [cards, setCards] = useState<CardType[]>([]);
@@ -318,33 +317,52 @@ export default function GameBoard() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="max-w-[800px] mx-auto p-5 sm:p-[15px]">
       {showConfetti && <Confetti />}
 
-      <div className={styles.header}>
-        <div className={styles.titleRow}>
-          <h1 className={styles.title}>Memory Game</h1>
+      <div className="text-center mb-[30px]">
+        <div className="flex items-center justify-center gap-[15px] mb-5 relative">
+          <h1
+            className="text-white font-extrabold tracking-wide my-0 animate-[titleFloat_3s_ease-in-out_infinite]"
+            style={{
+              fontSize: 'clamp(2rem, 5vw, 3rem)',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.5)'
+            }}
+          >
+            Memory Game
+          </h1>
           <button
-            className={styles.settingsButton}
+            className="bg-white/20 border-2 border-white/30 text-white text-[1.8rem] w-[50px] h-[50px] rounded-full cursor-pointer transition-all duration-300 flex items-center justify-center animate-[rotate_20s_linear_infinite] hover:bg-white/30 hover:scale-110 hover:animate-[rotate_2s_linear_infinite]"
             onClick={() => setSettingsOpen(true)}
             title="Settings"
+            style={{ boxShadow: '0 0 20px rgba(255, 255, 255, 0.4)' }}
           >
             ⚙️
           </button>
         </div>
 
-        <div className={styles.controls}>
-          <button className={styles.controlBtn} onClick={() => setLeaderboardOpen(true)}>
+        <div className="flex justify-center gap-2.5 mb-5 flex-wrap">
+          <button
+            className="bg-white/15 backdrop-blur-[10px] border-2 border-white/30 text-white py-2 px-4 rounded-[20px] cursor-pointer transition-all duration-300 text-sm font-semibold tracking-wide hover:bg-white/25 hover:border-white/50 hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setLeaderboardOpen(true)}
+          >
             🏆 Leaderboard
           </button>
-          <button className={styles.controlBtn} onClick={() => setStatisticsOpen(true)}>
+          <button
+            className="bg-white/15 backdrop-blur-[10px] border-2 border-white/30 text-white py-2 px-4 rounded-[20px] cursor-pointer transition-all duration-300 text-sm font-semibold tracking-wide hover:bg-white/25 hover:border-white/50 hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setStatisticsOpen(true)}
+          >
             📊 Stats
           </button>
-          <button className={styles.controlBtn} onClick={togglePause} disabled={gameWon}>
+          <button
+            className="bg-white/15 backdrop-blur-[10px] border-2 border-white/30 text-white py-2 px-4 rounded-[20px] cursor-pointer transition-all duration-300 text-sm font-semibold tracking-wide hover:bg-white/25 hover:border-white/50 hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={togglePause}
+            disabled={gameWon}
+          >
             {isPaused ? '▶️ Resume' : '⏸️ Pause'}
           </button>
           <button
-            className={styles.controlBtn}
+            className="bg-white/15 backdrop-blur-[10px] border-2 border-white/30 text-white py-2 px-4 rounded-[20px] cursor-pointer transition-all duration-300 text-sm font-semibold tracking-wide hover:bg-white/25 hover:border-white/50 hover:-translate-y-0.5 hover:shadow-[0_4px_8px_rgba(0,0,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={useHint}
             disabled={hintsRemaining === 0 || isPaused || gameWon}
           >
@@ -352,53 +370,90 @@ export default function GameBoard() {
           </button>
         </div>
 
-        <div className={styles.stats}>
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>Time</span>
-            <span className={styles.statValue}>{formatTime(stats.time)}</span>
+        <div className="flex justify-center gap-5 mb-5 flex-wrap sm:gap-3">
+          <div
+            className="relative overflow-hidden bg-white/20 backdrop-blur-[10px] py-3 px-6 rounded-2xl flex flex-col items-center gap-1 min-w-[100px] border border-white/30 transition-all duration-300 before:absolute before:content-[''] before:top-0 before:left-[-100%] before:w-full before:h-full before:animate-[statShimmer_3s_infinite] hover:-translate-y-0.5 sm:py-2.5 sm:px-[18px] sm:min-w-[90px] xs:py-2 xs:px-3 xs:min-w-[75px]"
+            style={{
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <span className="text-sm text-white/80 uppercase tracking-wide sm:text-xs xs:text-[0.7rem]">Time</span>
+            <span className="text-2xl font-bold text-white sm:text-xl xs:text-lg">{formatTime(stats.time)}</span>
           </div>
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>Moves</span>
-            <span className={styles.statValue}>{stats.moves}</span>
+          <div
+            className="relative overflow-hidden bg-white/20 backdrop-blur-[10px] py-3 px-6 rounded-2xl flex flex-col items-center gap-1 min-w-[100px] border border-white/30 transition-all duration-300 before:absolute before:content-[''] before:top-0 before:left-[-100%] before:w-full before:h-full before:animate-[statShimmer_3s_infinite] hover:-translate-y-0.5 sm:py-2.5 sm:px-[18px] sm:min-w-[90px] xs:py-2 xs:px-3 xs:min-w-[75px]"
+            style={{
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <span className="text-sm text-white/80 uppercase tracking-wide sm:text-xs xs:text-[0.7rem]">Moves</span>
+            <span className="text-2xl font-bold text-white sm:text-xl xs:text-lg">{stats.moves}</span>
           </div>
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>Pairs</span>
-            <span className={styles.statValue}>{stats.matchedPairs}/{pairs}</span>
+          <div
+            className="relative overflow-hidden bg-white/20 backdrop-blur-[10px] py-3 px-6 rounded-2xl flex flex-col items-center gap-1 min-w-[100px] border border-white/30 transition-all duration-300 before:absolute before:content-[''] before:top-0 before:left-[-100%] before:w-full before:h-full before:animate-[statShimmer_3s_infinite] hover:-translate-y-0.5 sm:py-2.5 sm:px-[18px] sm:min-w-[90px] xs:py-2 xs:px-3 xs:min-w-[75px]"
+            style={{
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <span className="text-sm text-white/80 uppercase tracking-wide sm:text-xs xs:text-[0.7rem]">Pairs</span>
+            <span className="text-2xl font-bold text-white sm:text-xl xs:text-lg">{stats.matchedPairs}/{pairs}</span>
           </div>
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>Streak</span>
-            <span className={styles.statValue}>🔥 {stats.streak}</span>
+          <div
+            className="relative overflow-hidden bg-white/20 backdrop-blur-[10px] py-3 px-6 rounded-2xl flex flex-col items-center gap-1 min-w-[100px] border border-white/30 transition-all duration-300 before:absolute before:content-[''] before:top-0 before:left-[-100%] before:w-full before:h-full before:animate-[statShimmer_3s_infinite] hover:-translate-y-0.5 sm:py-2.5 sm:px-[18px] sm:min-w-[90px] xs:py-2 xs:px-3 xs:min-w-[75px]"
+            style={{
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <span className="text-sm text-white/80 uppercase tracking-wide sm:text-xs xs:text-[0.7rem]">Streak</span>
+            <span className="text-2xl font-bold text-white sm:text-xl xs:text-lg">🔥 {stats.streak}</span>
           </div>
-          <div className={styles.statItem}>
-            <span className={styles.statLabel}>Score</span>
-            <span className={styles.statValue}>{stats.score}</span>
+          <div
+            className="relative overflow-hidden bg-white/20 backdrop-blur-[10px] py-3 px-6 rounded-2xl flex flex-col items-center gap-1 min-w-[100px] border border-white/30 transition-all duration-300 before:absolute before:content-[''] before:top-0 before:left-[-100%] before:w-full before:h-full before:animate-[statShimmer_3s_infinite] hover:-translate-y-0.5 sm:py-2.5 sm:px-[18px] sm:min-w-[90px] xs:py-2 xs:px-3 xs:min-w-[75px]"
+            style={{
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <span className="text-sm text-white/80 uppercase tracking-wide sm:text-xs xs:text-[0.7rem]">Score</span>
+            <span className="text-2xl font-bold text-white sm:text-xl xs:text-lg">{stats.score}</span>
           </div>
         </div>
 
         {bestScore && (
-          <div className={styles.bestScore}>
+          <div
+            className="bg-[rgba(255,215,0,0.2)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] py-2 px-5 rounded-[20px] mb-[15px] font-semibold animate-[pulse_2s_ease-in-out_infinite]"
+            style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)' }}
+          >
             🏆 Best: {bestScore.score} points
           </div>
         )}
 
-        <button className={styles.resetButton} onClick={resetGame}>
-          New Game
+        <button
+          className="relative overflow-hidden bg-white/25 backdrop-blur-[10px] text-white border-2 border-white/50 py-3 px-8 text-base font-bold rounded-[30px] cursor-pointer transition-all duration-300 uppercase tracking-[1.5px] before:absolute before:content-[''] before:top-1/2 before:left-1/2 before:w-0 before:h-0 before:rounded-full before:bg-white/30 before:-translate-x-1/2 before:-translate-y-1/2 before:transition-all before:duration-[0.6s] hover:bg-white/35 hover:border-white/90 hover:-translate-y-1 hover:scale-[1.02] hover:before:w-[300px] hover:before:h-[300px] active:-translate-y-0 active:scale-[0.98] sm:py-2.5 sm:px-7 sm:text-[0.95rem] xs:py-2 xs:px-6 xs:text-[0.85rem]"
+          onClick={resetGame}
+          style={{
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.3)'
+          }}
+        >
+          <span className="relative z-10">New Game</span>
         </button>
       </div>
 
       {isPaused && (
-        <div className={styles.pausedOverlay}>
-          <div className={styles.pausedMessage}>
-            <h2>⏸️ Game Paused</h2>
-            <p>Click Resume to continue</p>
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-[10px] flex items-center justify-center z-[500] animate-[fadeIn_0.3s_ease-in-out]"
+        >
+          <div className="bg-white/10 border-2 border-white/30 p-10 rounded-3xl text-center text-white">
+            <h2 className="text-[2.5rem] mb-2.5" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)' }}>⏸️ Game Paused</h2>
+            <p className="text-xl opacity-90">Click Resume to continue</p>
           </div>
         </div>
       )}
 
       <div
-        className={styles.gameBoard}
+        className="grid gap-[15px] max-w-[600px] mx-auto p-5 bg-white/10 backdrop-blur-[5px] rounded-[20px] border border-white/20 md:gap-3 md:p-[15px] sm:gap-2.5 sm:p-3 xs:gap-2 xs:p-2"
         style={{
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.2)'
         }}
       >
         {cards.map(card => (
@@ -413,20 +468,41 @@ export default function GameBoard() {
       </div>
 
       {gameWon && (
-        <div className={styles.winModal}>
-          <div className={styles.winContent}>
-            <h2 className={styles.winTitle}>
+        <div
+          className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-[1000] animate-[fadeIn_0.4s_ease-in-out]"
+        >
+          <div
+            className="relative overflow-hidden text-center p-[50px_40px] rounded-[30px] border-2 border-white/30 max-w-[90%] animate-[slideInBounce_0.7s_cubic-bezier(0.34,1.56,0.64,1)] before:absolute before:content-[''] before:-top-1/2 before:-left-1/2 before:w-[200%] before:h-[200%] before:animate-[rotateGlow_10s_linear_infinite] sm:p-[35px_25px]"
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(102, 126, 234, 0.4), inset 0 1px 3px rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            <div
+              className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] animate-[rotateGlow_10s_linear_infinite]"
+              style={{ background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)' }}
+            />
+            <h2
+              className="relative z-10 text-white mb-5 font-extrabold animate-[titlePulse_1.5s_ease-in-out_infinite]"
+              style={{
+                fontSize: 'clamp(2rem, 5vw, 3rem)',
+                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.5)'
+              }}
+            >
               {showNewRecord ? '🏆 New Record! 🏆' : '🎉 You Won! 🎉'}
             </h2>
-            <div className={styles.winStats}>
-              <p>Score: {stats.score} points</p>
-              <p>Time: {formatTime(stats.time)}</p>
-              <p>Moves: {stats.moves}</p>
-              <p>Max Streak: {stats.maxStreak}</p>
-              <p>Difficulty: {difficulty.toUpperCase()}</p>
+            <div className="relative z-10 text-white text-xl mb-[30px] sm:text-lg">
+              <p className="my-2.5 font-semibold" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)' }}>Score: {stats.score} points</p>
+              <p className="my-2.5 font-semibold" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)' }}>Time: {formatTime(stats.time)}</p>
+              <p className="my-2.5 font-semibold" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)' }}>Moves: {stats.moves}</p>
+              <p className="my-2.5 font-semibold" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)' }}>Max Streak: {stats.maxStreak}</p>
+              <p className="my-2.5 font-semibold" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)' }}>Difficulty: {difficulty.toUpperCase()}</p>
             </div>
-            <button className={styles.playAgainButton} onClick={resetGame}>
-              Play Again
+            <button
+              className="relative z-10 overflow-hidden bg-white text-[#667eea] border-none py-[15px] px-10 text-lg font-bold rounded-[30px] cursor-pointer transition-all duration-300 uppercase tracking-[1.5px] shadow-[0_4px_15px_rgba(0,0,0,0.3)] before:absolute before:content-[''] before:top-1/2 before:left-1/2 before:w-0 before:h-0 before:rounded-full before:bg-[rgba(102,126,234,0.2)] before:-translate-x-1/2 before:-translate-y-1/2 before:transition-all before:duration-[0.6s] hover:scale-[1.08] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(0,0,0,0.4)] hover:before:w-[300px] hover:before:h-[300px] active:scale-100 active:translate-y-0 active:shadow-[0_4px_10px_rgba(0,0,0,0.3)] sm:py-3 sm:px-8 sm:text-base"
+              onClick={resetGame}
+            >
+              <span className="relative z-10">Play Again</span>
             </button>
           </div>
         </div>
@@ -454,6 +530,47 @@ export default function GameBoard() {
         onClose={() => setStatisticsOpen(false)}
         stats={getStatisticsData()}
       />
+
+      <style jsx>{`
+        @keyframes titleFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        @keyframes rotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+          50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        }
+        @keyframes statShimmer {
+          0% { left: -100%; }
+          100% { left: 100%; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideInBounce {
+          0% { transform: translateY(-100px) scale(0.8); opacity: 0; }
+          60% { transform: translateY(10px) scale(1.05); opacity: 1; }
+          80% { transform: translateY(-5px) scale(0.98); }
+          100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes rotateGlow {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes titlePulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        @media (max-width: 380px) {
+          .xs\\:gap-2 { gap: 8px; }
+          .xs\\:p-2 { padding: 8px; }
+        }
+      `}</style>
     </div>
   );
 }
