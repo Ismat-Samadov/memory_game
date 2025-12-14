@@ -9,15 +9,24 @@
   margin-bottom: 30px;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
 .title {
   font-size: clamp(2rem, 5vw, 3rem);
   color: white;
-  margin-bottom: 20px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
                0 0 20px rgba(255, 255, 255, 0.5);
   font-weight: 800;
   letter-spacing: 1px;
   animation: titleFloat 3s ease-in-out infinite;
+  margin: 0;
 }
 
 @keyframes titleFloat {
@@ -26,6 +35,59 @@
   }
   50% {
     transform: translateY(-5px);
+  }
+}
+
+.settingsButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rotate 20s linear infinite;
+}
+
+.settingsButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+  animation: rotate 2s linear infinite;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bestScore {
+  background: rgba(255, 215, 0, 0.2);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  color: #FFD700;
+  padding: 8px 20px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
   }
 }
 
