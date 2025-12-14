@@ -13,7 +13,20 @@
   font-size: clamp(2rem, 5vw, 3rem);
   color: white;
   margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
+               0 0 20px rgba(255, 255, 255, 0.5);
+  font-weight: 800;
+  letter-spacing: 1px;
+  animation: titleFloat 3s ease-in-out infinite;
+}
+
+@keyframes titleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .stats {
@@ -28,13 +41,44 @@
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   padding: 12px 24px;
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
   min-width: 100px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+              inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.statItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: statShimmer 3s infinite;
+}
+
+@keyframes statShimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.statItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15),
+              inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .statLabel {
@@ -51,29 +95,58 @@
 }
 
 .resetButton {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
   color: white;
   border: 2px solid rgba(255, 255, 255, 0.5);
   padding: 12px 32px;
   font-size: 1rem;
   font-weight: bold;
-  border-radius: 25px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15),
+              inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.resetButton::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.resetButton:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .resetButton:hover {
-  background: rgba(255, 255, 255, 0.4);
-  border-color: rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25),
+              inset 0 1px 3px rgba(255, 255, 255, 0.4);
 }
 
 .resetButton:active {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.resetButton > * {
+  position: relative;
+  z-index: 1;
 }
 
 .gameBoard {
@@ -82,6 +155,13 @@
   gap: 15px;
   max-width: 600px;
   margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+              inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .winModal {
@@ -90,39 +170,83 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.4s ease-in-out;
 }
 
 .winContent {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px;
-  border-radius: 20px;
+  padding: 50px 40px;
+  border-radius: 30px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  animation: slideIn 0.5s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
+              0 0 40px rgba(102, 126, 234, 0.4),
+              inset 0 1px 3px rgba(255, 255, 255, 0.3);
+  animation: slideInBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: 90%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.winContent::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: rotateGlow 10s linear infinite;
+}
+
+@keyframes rotateGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .winTitle {
   font-size: clamp(2rem, 5vw, 3rem);
   color: white;
   margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
+               0 0 30px rgba(255, 255, 255, 0.5);
+  font-weight: 800;
+  animation: titlePulse 1.5s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes titlePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .winStats {
   color: white;
   font-size: 1.25rem;
   margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
 }
 
 .winStats p {
   margin: 10px 0;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .playAgainButton {
@@ -132,20 +256,48 @@
   padding: 15px 40px;
   font-size: 1.1rem;
   font-weight: bold;
-  border-radius: 25px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.playAgainButton::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.playAgainButton:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .playAgainButton:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .playAgainButton:active {
-  transform: scale(0.95);
+  transform: scale(1) translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.playAgainButton > * {
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes fadeIn {
@@ -157,30 +309,58 @@
   }
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
+@keyframes slideInBounce {
+  0% {
+    transform: translateY(-100px) scale(0.8);
     opacity: 0;
   }
-  to {
-    transform: translateY(0);
+  60% {
+    transform: translateY(10px) scale(1.05);
     opacity: 1;
+  }
+  80% {
+    transform: translateY(-5px) scale(0.98);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .gameBoard {
+    gap: 12px;
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .stats {
+    gap: 12px;
+  }
+
+  .resetButton {
+    padding: 10px 28px;
+    font-size: 0.95rem;
   }
 }
 
 @media (max-width: 640px) {
   .gameBoard {
     gap: 10px;
-    max-width: 100%;
+    padding: 12px;
   }
 
   .stats {
-    gap: 10px;
+    gap: 8px;
   }
 
   .statItem {
-    padding: 10px 15px;
-    min-width: 80px;
+    padding: 10px 18px;
+    min-width: 90px;
   }
 
   .statLabel {
@@ -188,11 +368,63 @@
   }
 
   .statValue {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
+  .resetButton {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  .winContent {
+    padding: 35px 25px;
+  }
+
+  .winTitle {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+  }
+
+  .winStats {
+    font-size: 1.1rem;
+  }
+
+  .playAgainButton {
+    padding: 12px 32px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
   .container {
-    padding: 15px;
+    padding: 10px;
+  }
+
+  .gameBoard {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .stats {
+    gap: 6px;
+  }
+
+  .statItem {
+    padding: 8px 12px;
+    min-width: 75px;
+  }
+
+  .statLabel {
+    font-size: 0.7rem;
+  }
+
+  .statValue {
+    font-size: 1.1rem;
+  }
+
+  .resetButton {
+    padding: 8px 20px;
+    font-size: 0.85rem;
   }
 
   .winContent {
@@ -200,8 +432,46 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 380px) {
   .gameBoard {
-    gap: 8px;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .statItem {
+    padding: 6px 10px;
+    min-width: 65px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .card:hover {
+    transform: none;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  }
+
+  .card:active {
+    transform: scale(0.95);
+  }
+
+  .resetButton:hover {
+    transform: none;
+  }
+
+  .resetButton:active {
+    transform: scale(0.95);
+  }
+
+  .playAgainButton:hover {
+    transform: none;
+  }
+
+  .playAgainButton:active {
+    transform: scale(0.95);
+  }
+
+  .statItem:hover {
+    transform: none;
   }
 }
