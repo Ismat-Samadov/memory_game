@@ -1,38 +1,51 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer base {
-  * {
-    @apply box-border p-0 m-0;
-  }
-
-  html,
-  body {
-    @apply max-w-screen overflow-x-hidden antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply min-h-screen flex justify-center items-center p-5 relative overflow-hidden;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-
-  #__next {
-    @apply w-full relative z-10;
-  }
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-@layer utilities {
-  .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
-  }
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  scroll-behavior: smooth;
+}
 
-  .glass-strong {
-    @apply bg-white/20 backdrop-blur-lg border border-white/30;
-  }
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+#__next {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Custom scrollbar */

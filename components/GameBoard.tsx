@@ -43,6 +43,8 @@ export default function GameBoard() {
 
   // Load settings and data
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const savedDifficulty = localStorage.getItem('difficulty') as Difficulty;
     const savedTheme = localStorage.getItem('theme') as Theme;
     const savedSound = localStorage.getItem('soundEnabled');
@@ -103,6 +105,8 @@ export default function GameBoard() {
   }, [currentTheme]);
 
   const checkBestScore = (score: number) => {
+    if (typeof window === 'undefined') return;
+
     const currentScore: BestScore = {
       moves: stats.moves,
       time: stats.time,
@@ -122,6 +126,8 @@ export default function GameBoard() {
   };
 
   const saveToLeaderboard = (score: number) => {
+    if (typeof window === 'undefined') return;
+
     const leaderboard: LeaderboardEntry[] = JSON.parse(localStorage.getItem('leaderboard') || '[]');
     const newEntry: LeaderboardEntry = {
       rank: 0,
@@ -142,6 +148,8 @@ export default function GameBoard() {
   };
 
   const updateStatistics = (score: number, won: boolean) => {
+    if (typeof window === 'undefined') return;
+
     const currentStats: StatsType = JSON.parse(localStorage.getItem('statistics') || JSON.stringify({
       totalGames: 0,
       totalWins: 0,
@@ -278,32 +286,53 @@ export default function GameBoard() {
 
   const handleDifficultyChange = (newDifficulty: Difficulty) => {
     setDifficulty(newDifficulty);
-    localStorage.setItem('difficulty', newDifficulty);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('difficulty', newDifficulty);
+    }
     setSettingsOpen(false);
   };
 
   const handleThemeChange = (newTheme: Theme) => {
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
   };
 
   const handleSoundToggle = () => {
     const newValue = !soundEnabled;
     setSoundEnabled(newValue);
-    localStorage.setItem('soundEnabled', String(newValue));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('soundEnabled', String(newValue));
+    }
   };
 
   const handleModeChange = (newMode: GameMode) => {
     setGameMode(newMode);
-    localStorage.setItem('gameMode', newMode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gameMode', newMode);
+    }
     setSettingsOpen(false);
   };
 
   const getLeaderboardData = (): LeaderboardEntry[] => {
+    if (typeof window === 'undefined') return [];
     return JSON.parse(localStorage.getItem('leaderboard') || '[]');
   };
 
   const getStatisticsData = (): StatsType => {
+    if (typeof window === 'undefined') {
+      return {
+        totalGames: 0,
+        totalWins: 0,
+        totalMoves: 0,
+        totalTime: 0,
+        bestScore: 0,
+        averageScore: 0,
+        perfectGames: 0,
+        hintsUsed: 0
+      };
+    }
     return JSON.parse(localStorage.getItem('statistics') || JSON.stringify({
       totalGames: 0,
       totalWins: 0,
