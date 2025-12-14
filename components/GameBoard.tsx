@@ -1,11 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card as CardType, GameStats, Difficulty, Theme, BestScore } from '@/types/game';
+import { Card as CardType, GameStats, Difficulty, Theme, BestScore, GameMode, LeaderboardEntry, Statistics as StatsType } from '@/types/game';
 import { createDeck, formatTime, getDifficultyConfig } from '@/utils/gameUtils';
+import { calculateScore } from '@/utils/scoreUtils';
 import { getTheme } from '@/utils/themes';
 import Card from './Card';
 import Settings from './Settings';
+import Confetti from './Confetti';
+import Leaderboard from './Leaderboard';
+import Statistics from './Statistics';
 import styles from './GameBoard.module.css';
 
 export default function GameBoard() {
@@ -15,54 +19,82 @@ export default function GameBoard() {
     moves: 0,
     time: 0,
     matchedPairs: 0,
+    streak: 0,
+    maxStreak: 0,
+    hintsUsed: 0,
+    score: 0
   });
   const [isChecking, setIsChecking] = useState(false);
   const [gameWon, setGameWon] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [theme, setTheme] = useState<Theme>('purple');
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [gameMode, setGameMode] = useState<GameMode>('classic');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [statisticsOpen, setStatisticsOpen] = useState(false);
   const [bestScore, setBestScore] = useState<BestScore | null>(null);
   const [showNewRecord, setShowNewRecord] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [hintsRemaining, setHintsRemaining] = useState(3);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const { pairs, columns } = getDifficultyConfig(difficulty);
   const currentTheme = getTheme(theme);
 
-  // Load settings from localStorage
+  // Load settings and data
   useEffect(() => {
     const savedDifficulty = localStorage.getItem('difficulty') as Difficulty;
     const savedTheme = localStorage.getItem('theme') as Theme;
     const savedSound = localStorage.getItem('soundEnabled');
-    const savedBestScore = localStorage.getItem(`bestScore_${difficulty}`);
+    const savedMode = localStorage.getItem('gameMode') as GameMode;
+    const savedBestScore = localStorage.getItem(`bestScore_${difficulty}_${gameMode}`);
 
     if (savedDifficulty) setDifficulty(savedDifficulty);
     if (savedTheme) setTheme(savedTheme);
     if (savedSound) setSoundEnabled(savedSound === 'true');
+    if (savedMode) setGameMode(savedMode);
     if (savedBestScore) setBestScore(JSON.parse(savedBestScore));
-  }, [difficulty]);
+  }, [difficulty, gameMode]);
 
   // Initialize game
   useEffect(() => {
     resetGame();
-  }, [difficulty]);
+  }, [difficulty, gameMode]);
 
   // Timer
   useEffect(() => {
-    if (stats.matchedPairs === 0 || gameWon) return;
+    if (stats.matchedPairs === 0 || gameWon || isPaused) return;
 
     const timer = setInterval(() => {
       setStats(prev => ({ ...prev, time: prev.time + 1 }));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [stats.matchedPairs, gameWon]);
+  }, [stats.matchedPairs, gameWon, isPaused]);
 
   // Check for win condition
   useEffect(() => {
     if (stats.matchedPairs === pairs && stats.matchedPairs > 0) {
+      const finalScore = calculateScore(
+        stats.moves,
+        stats.time,
+        difficulty,
+        stats.maxStreak,
+        stats.hintsUsed,
+        pairs,
+        gameMode
+      );
+      setStats(prev => ({ ...prev, score: finalScore }));
       setGameWon(true);
-      checkBestScore();
+      setShowConfetti(true);
+      checkBestScore(finalScore);
+      saveToLeaderboard(finalScore);
+      updateStatistics(finalScore, true);
       if (soundEnabled) playSound('win');
+
+      // Hide confetti after 5 seconds
+      setTimeout(() => setShowConfetti(false), 5000);
     }
   }, [stats.matchedPairs, pairs]);
 
@@ -71,27 +103,71 @@ export default function GameBoard() {
     document.body.style.background = currentTheme.gradient;
   }, [currentTheme]);
 
-  const checkBestScore = () => {
-    const currentScore = { moves: stats.moves, time: stats.time, difficulty };
-    const savedBestScore = localStorage.getItem(`bestScore_${difficulty}`);
+  const checkBestScore = (score: number) => {
+    const currentScore: BestScore = {
+      moves: stats.moves,
+      time: stats.time,
+      difficulty,
+      mode: gameMode,
+      score,
+      playerName: 'Player',
+      date: new Date().toISOString()
+    };
+    const savedBestScore = localStorage.getItem(`bestScore_${difficulty}_${gameMode}`);
 
-    if (!savedBestScore) {
-      localStorage.setItem(`bestScore_${difficulty}`, JSON.stringify(currentScore));
+    if (!savedBestScore || score > (JSON.parse(savedBestScore).score || 0)) {
+      localStorage.setItem(`bestScore_${difficulty}_${gameMode}`, JSON.stringify(currentScore));
       setBestScore(currentScore);
       setShowNewRecord(true);
-    } else {
-      const best: BestScore = JSON.parse(savedBestScore);
-      if (stats.moves < best.moves || (stats.moves === best.moves && stats.time < best.time)) {
-        localStorage.setItem(`bestScore_${difficulty}`, JSON.stringify(currentScore));
-        setBestScore(currentScore);
-        setShowNewRecord(true);
-      }
     }
   };
 
-  const playSound = (type: 'flip' | 'match' | 'win') => {
+  const saveToLeaderboard = (score: number) => {
+    const leaderboard: LeaderboardEntry[] = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+    const newEntry: LeaderboardEntry = {
+      rank: 0,
+      playerName: 'Player',
+      score,
+      moves: stats.moves,
+      time: stats.time,
+      difficulty,
+      mode: gameMode,
+      date: new Date().toISOString()
+    };
+
+    leaderboard.push(newEntry);
+    leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard.forEach((entry, index) => entry.rank = index + 1);
+
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard.slice(0, 50)));
+  };
+
+  const updateStatistics = (score: number, won: boolean) => {
+    const currentStats: StatsType = JSON.parse(localStorage.getItem('statistics') || JSON.stringify({
+      totalGames: 0,
+      totalWins: 0,
+      totalMoves: 0,
+      totalTime: 0,
+      bestScore: 0,
+      averageScore: 0,
+      perfectGames: 0,
+      hintsUsed: 0
+    }));
+
+    currentStats.totalGames += 1;
+    if (won) currentStats.totalWins += 1;
+    currentStats.totalMoves += stats.moves;
+    currentStats.totalTime += stats.time;
+    currentStats.bestScore = Math.max(currentStats.bestScore, score);
+    currentStats.averageScore = ((currentStats.averageScore * (currentStats.totalGames - 1)) + score) / currentStats.totalGames;
+    if (stats.moves === pairs) currentStats.perfectGames += 1;
+    currentStats.hintsUsed += stats.hintsUsed;
+
+    localStorage.setItem('statistics', JSON.stringify(currentStats));
+  };
+
+  const playSound = (type: 'flip' | 'match' | 'win' | 'hint') => {
     if (!soundEnabled) return;
-    // Simple beep sounds using Web Audio API
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -99,7 +175,7 @@ export default function GameBoard() {
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    const frequencies = { flip: 440, match: 660, win: 880 };
+    const frequencies = { flip: 440, match: 660, win: 880, hint: 550 };
     oscillator.frequency.value = frequencies[type];
     oscillator.type = 'sine';
 
@@ -113,26 +189,49 @@ export default function GameBoard() {
   const resetGame = useCallback(() => {
     setCards(createDeck(difficulty));
     setFlippedCards([]);
-    setStats({ moves: 0, time: 0, matchedPairs: 0 });
+    setStats({ moves: 0, time: 0, matchedPairs: 0, streak: 0, maxStreak: 0, hintsUsed: 0, score: 0 });
     setIsChecking(false);
     setGameWon(false);
     setShowNewRecord(false);
+    setIsPaused(false);
+    setHintsRemaining(3);
+    setShowConfetti(false);
   }, [difficulty]);
 
+  const useHint = () => {
+    if (hintsRemaining <= 0 || isPaused) return;
+
+    playSound('hint');
+    setHintsRemaining(prev => prev - 1);
+    setStats(prev => ({ ...prev, hintsUsed: prev.hintsUsed + 1 }));
+
+    // Show all unmatched cards for 2 seconds
+    const unmatchedCards = cards.filter(c => !c.isMatched);
+    setCards(prev => prev.map(card => !card.isMatched ? { ...card, isFlipped: true } : card));
+
+    setTimeout(() => {
+      setCards(prev => prev.map(card =>
+        !card.isMatched && !flippedCards.includes(card.id) ? { ...card, isFlipped: false } : card
+      ));
+    }, 2000);
+  };
+
+  const togglePause = () => {
+    setIsPaused(prev => !prev);
+  };
+
   const handleCardClick = useCallback((cardId: number) => {
-    if (isChecking || flippedCards.length >= 2) return;
+    if (isChecking || flippedCards.length >= 2 || isPaused) return;
 
     setFlippedCards(prev => [...prev, cardId]);
     playSound('flip');
 
-    // Update card state
     setCards(prev =>
       prev.map(card =>
         card.id === cardId ? { ...card, isFlipped: true } : card
       )
     );
 
-    // If this is the second card flipped
     if (flippedCards.length === 1) {
       setIsChecking(true);
       setStats(prev => ({ ...prev, moves: prev.moves + 1 }));
@@ -141,8 +240,14 @@ export default function GameBoard() {
       const secondCard = cards.find(c => c.id === cardId);
 
       if (firstCard && secondCard && firstCard.value === secondCard.value) {
-        // Match found
         playSound('match');
+        const newStreak = stats.streak + 1;
+        setStats(prev => ({
+          ...prev,
+          streak: newStreak,
+          maxStreak: Math.max(prev.maxStreak, newStreak)
+        }));
+
         setTimeout(() => {
           setCards(prev =>
             prev.map(card =>
@@ -156,7 +261,7 @@ export default function GameBoard() {
           setIsChecking(false);
         }, 600);
       } else {
-        // No match
+        setStats(prev => ({ ...prev, streak: 0 }));
         setTimeout(() => {
           setCards(prev =>
             prev.map(card =>
@@ -170,7 +275,7 @@ export default function GameBoard() {
         }, 1000);
       }
     }
-  }, [cards, flippedCards, isChecking, soundEnabled]);
+  }, [cards, flippedCards, isChecking, soundEnabled, isPaused, stats.streak]);
 
   const handleDifficultyChange = (newDifficulty: Difficulty) => {
     setDifficulty(newDifficulty);
@@ -189,8 +294,33 @@ export default function GameBoard() {
     localStorage.setItem('soundEnabled', String(newValue));
   };
 
+  const handleModeChange = (newMode: GameMode) => {
+    setGameMode(newMode);
+    localStorage.setItem('gameMode', newMode);
+    setSettingsOpen(false);
+  };
+
+  const getLeaderboardData = (): LeaderboardEntry[] => {
+    return JSON.parse(localStorage.getItem('leaderboard') || '[]');
+  };
+
+  const getStatisticsData = (): StatsType => {
+    return JSON.parse(localStorage.getItem('statistics') || JSON.stringify({
+      totalGames: 0,
+      totalWins: 0,
+      totalMoves: 0,
+      totalTime: 0,
+      bestScore: 0,
+      averageScore: 0,
+      perfectGames: 0,
+      hintsUsed: 0
+    }));
+  };
+
   return (
     <div className={styles.container}>
+      {showConfetti && <Confetti />}
+
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <h1 className={styles.title}>Memory Game</h1>
@@ -200,6 +330,25 @@ export default function GameBoard() {
             title="Settings"
           >
             ⚙️
+          </button>
+        </div>
+
+        <div className={styles.controls}>
+          <button className={styles.controlBtn} onClick={() => setLeaderboardOpen(true)}>
+            🏆 Leaderboard
+          </button>
+          <button className={styles.controlBtn} onClick={() => setStatisticsOpen(true)}>
+            📊 Stats
+          </button>
+          <button className={styles.controlBtn} onClick={togglePause} disabled={gameWon}>
+            {isPaused ? '▶️ Resume' : '⏸️ Pause'}
+          </button>
+          <button
+            className={styles.controlBtn}
+            onClick={useHint}
+            disabled={hintsRemaining === 0 || isPaused || gameWon}
+          >
+            💡 Hint ({hintsRemaining})
           </button>
         </div>
 
@@ -216,11 +365,19 @@ export default function GameBoard() {
             <span className={styles.statLabel}>Pairs</span>
             <span className={styles.statValue}>{stats.matchedPairs}/{pairs}</span>
           </div>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Streak</span>
+            <span className={styles.statValue}>🔥 {stats.streak}</span>
+          </div>
+          <div className={styles.statItem}>
+            <span className={styles.statLabel}>Score</span>
+            <span className={styles.statValue}>{stats.score}</span>
+          </div>
         </div>
 
         {bestScore && (
           <div className={styles.bestScore}>
-            🏆 Best: {bestScore.moves} moves in {formatTime(bestScore.time)}
+            🏆 Best: {bestScore.score} points
           </div>
         )}
 
@@ -228,6 +385,15 @@ export default function GameBoard() {
           New Game
         </button>
       </div>
+
+      {isPaused && (
+        <div className={styles.pausedOverlay}>
+          <div className={styles.pausedMessage}>
+            <h2>⏸️ Game Paused</h2>
+            <p>Click Resume to continue</p>
+          </div>
+        </div>
+      )}
 
       <div
         className={styles.gameBoard}
@@ -240,7 +406,7 @@ export default function GameBoard() {
             key={card.id}
             card={card}
             onClick={() => handleCardClick(card.id)}
-            disabled={isChecking}
+            disabled={isChecking || isPaused}
             theme={currentTheme}
           />
         ))}
@@ -253,8 +419,10 @@ export default function GameBoard() {
               {showNewRecord ? '🏆 New Record! 🏆' : '🎉 You Won! 🎉'}
             </h2>
             <div className={styles.winStats}>
+              <p>Score: {stats.score} points</p>
               <p>Time: {formatTime(stats.time)}</p>
               <p>Moves: {stats.moves}</p>
+              <p>Max Streak: {stats.maxStreak}</p>
               <p>Difficulty: {difficulty.toUpperCase()}</p>
             </div>
             <button className={styles.playAgainButton} onClick={resetGame}>
@@ -273,6 +441,18 @@ export default function GameBoard() {
         onSoundToggle={handleSoundToggle}
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+      />
+
+      <Leaderboard
+        isOpen={leaderboardOpen}
+        onClose={() => setLeaderboardOpen(false)}
+        entries={getLeaderboardData()}
+      />
+
+      <Statistics
+        isOpen={statisticsOpen}
+        onClose={() => setStatisticsOpen(false)}
+        stats={getStatisticsData()}
       />
     </div>
   );
