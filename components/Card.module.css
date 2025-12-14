@@ -3,21 +3,16 @@
   aspect-ratio: 1;
   perspective: 1000px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
   position: relative;
-  will-change: transform;
-  /* Prevent layout shift by containing transforms */
-  isolation: isolate;
 }
 
 .card:hover:not(.flipped):not(.matched) {
-  transform: scale(1.05) translateZ(0);
-  z-index: 10;
+  transform: scale(1.05);
 }
 
 .card:active {
-  transform: scale(0.98) translateZ(0);
+  transform: scale(0.98);
 }
 
 .cardInner {
@@ -35,9 +30,12 @@
 .cardFront,
 .cardBack {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,14 +47,13 @@
               inset 0 -2px 4px rgba(0, 0, 0, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  /* Ensure card faces don't shift layout */
-  transform: translateZ(0);
 }
 
 .cardFront {
   color: white;
   font-size: clamp(2.5rem, 6vw, 4rem);
   position: relative;
+  z-index: 2;
 }
 
 .cardFront::before {
@@ -71,7 +68,7 @@
   transition: opacity 0.3s;
 }
 
-.card:hover .cardFront::before {
+.card:hover:not(.flipped):not(.matched) .cardFront::before {
   opacity: 1;
 }
 
@@ -143,5 +140,9 @@
 
   .cardFront {
     font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .card:hover:not(.flipped):not(.matched) {
+    transform: none;
   }
 }
