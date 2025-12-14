@@ -1,17 +1,35 @@
-import { Card } from '@/types/game';
+import { Card, Difficulty } from '@/types/game';
 
 // Card values using emojis
-const cardValues = ['🎮', '🎯', '🎨', '🎭', '🎪', '🎸', '🎲', '🎰'];
+const allCardValues = [
+  '🎮', '🎯', '🎨', '🎭', '🎪', '🎸', '🎲', '🎰',
+  '🎬', '🎤', '🎧', '🎹', '🎺', '🎻', '🎼', '🎵',
+  '⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🎱'
+];
 
 /**
- * Creates a shuffled deck of cards
+ * Get grid configuration based on difficulty
+ */
+export const getDifficultyConfig = (difficulty: Difficulty) => {
+  const configs = {
+    easy: { pairs: 6, columns: 3 },     // 12 cards (3x4 grid)
+    medium: { pairs: 8, columns: 4 },   // 16 cards (4x4 grid)
+    hard: { pairs: 12, columns: 4 }     // 24 cards (4x6 grid)
+  };
+  return configs[difficulty];
+};
+
+/**
+ * Creates a shuffled deck of cards based on difficulty
  * Each card appears twice to create matching pairs
  */
-export const createDeck = (): Card[] => {
+export const createDeck = (difficulty: Difficulty = 'medium'): Card[] => {
+  const { pairs } = getDifficultyConfig(difficulty);
   const deck: Card[] = [];
+  const selectedValues = allCardValues.slice(0, pairs);
 
   // Create pairs of cards
-  cardValues.forEach((value, index) => {
+  selectedValues.forEach((value, index) => {
     deck.push({
       id: index * 2,
       value,
